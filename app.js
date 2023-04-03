@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const cors = require("cors");
 const bodyParser = require("body-parser");
+const PORT = process.env.PORT || 3000;
 
 
 //import routes
@@ -29,6 +30,6 @@ app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
-app.listen(3000, () => {
-  console.log('Server listening on port 3000');
+let server = app.listen(PORT, function () {
+  console.log(`Server running on ${PORT}`);
 });
