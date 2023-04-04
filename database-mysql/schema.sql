@@ -12,28 +12,28 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,N
 -- Schema mydb
 -- -----------------------------------------------------
 -- -----------------------------------------------------
--- Schema railway
+-- Schema petsya
 -- ------------------------------------------------------
 -- -----------------------------------------------------
--- Schema railway
+-- Schema petsya
 -- -----------------------------------------------------
-DROP DATABASE IF EXISTS `railway`;
+DROP DATABASE IF EXISTS `petsya`;
 
-CREATE SCHEMA IF NOT EXISTS `railway` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+CREATE SCHEMA IF NOT EXISTS `petsya` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
 
-USE `railway`;
+USE `petsya`;
 
 -- -----------------------------------------------------
--- Table `railway`.`chat`
+-- Table `petsya`.`petsya`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `railway`.`Chat` (
+CREATE TABLE IF NOT EXISTS `petsya`.`chat` (
   `message_id` INT NOT NULL AUTO_INCREMENT,
-  `conversation_id` INT NOT NULL,
+  `convertSation_id` VARCHAR(10) NOT NULL ,
   `sender_id` INT NOT NULL,
   `reciever_id` INT NOT NULL,
-  `message` VARCHAR(200) NOT NULL,
-  `timestamp` VARCHAR(20) NOT NULL,
-  `status` VARCHAR(200) NOT NULL,
+  `message` VARCHAR(200) DEFAULT NULL,
+  `timestamp` VARCHAR(40) DEFAULT NULL,
+  `status` VARCHAR(200) DEFAULT NULL,
   PRIMARY KEY (
     `message_id`
   )
@@ -41,9 +41,9 @@ CREATE TABLE IF NOT EXISTS `railway`.`Chat` (
 
 
 -- -----------------------------------------------------
--- Table `railway`.`questions_has_contract_types`
+-- Table `petsya`.`questions_has_contract_types`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `railway`.`user_has_posts` (
+CREATE TABLE IF NOT EXISTS `petsya`.`user_has_posts` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `user_id` INT NOT NULL,
   `content` VARCHAR(200) DEFAULT NULL,
@@ -55,9 +55,9 @@ CREATE TABLE IF NOT EXISTS `railway`.`user_has_posts` (
 ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
 
 -- -----------------------------------------------------
--- Table `railway`.`users`
+-- Table `petsya`.`users`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `railway`.`users` (
+CREATE TABLE IF NOT EXISTS `petsya`.`users` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `first_name` VARCHAR(200) NOT NULL,
   `last_name` VARCHAR(200) NOT NULL,
@@ -70,9 +70,9 @@ CREATE TABLE IF NOT EXISTS `railway`.`users` (
 
 
 -- -----------------------------------------------------
--- Table `railway`.`users_has_notifications`
+-- Table `petsya`.`users_has_notifications`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `railway`.`users_has_notifications` (
+CREATE TABLE IF NOT EXISTS `petsya`.`users_has_notifications` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `owner` INT NOT NULL,
   `post_id` INT NOT NULL,

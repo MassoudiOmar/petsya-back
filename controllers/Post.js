@@ -21,10 +21,7 @@ require("dotenv").config();
 let addPost = (req, res) => {
   const { id } = req.params;
   const { content, attachment, likes, comments, shares } = req.body;
-  if (!content) {
-    res.send("please fill all the fields");
-  }
-  if (!attachment) {
+  if (!attachment && content) {
     const sql =
       "INSERT INTO user_has_posts (user_id ,content,attachment,likes,comments,shares) VALUES (?,?,?,?,?,?)";
 
@@ -39,7 +36,32 @@ let addPost = (req, res) => {
         }
       }
     );
-  } else if(attachment){
+  } else if(attachment && !content){
+    cloudinary.uploader.upload(
+      `data:image/jpeg;base64,${attachment}`,
+      (error, result) => {
+        if (error) {
+          console.error(error);
+        } else {
+          var image = result.secure_url;
+          const sql =
+            "INSERT INTO user_has_posts (user_id ,content,attachment,likes,comments,shares) VALUES (?,?,?,?,?,?)";
+
+          db.query(
+            sql,
+            [id, content, image, likes, comments, shares],
+            (err, result) => {
+              if (err) {
+                res.send(err);
+              } else {
+                res.send(result);
+              }
+            }
+          );
+        }
+      }
+    );
+  }else{
     cloudinary.uploader.upload(
       `data:image/jpeg;base64,${attachment}`,
       (error, result) => {
@@ -71,7 +93,7 @@ let getPost =(req,res)=>{
 const sql = 'select * from user_has_posts inner join users where users.id = user_has_posts.user_id'
 db.query(sql,(err,result)=>{
     if(err){console.log(err)}
-    else{res.send(result)}
+    else{res.send(result.reverse())}
 })
 }
 

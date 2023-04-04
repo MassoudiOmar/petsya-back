@@ -148,8 +148,17 @@ const decodeToken = function (req, res) {
   });
 };
 
+const getUsers = (req,res)=>{
+const sql= 'select id ,image , first_name,last_name from users'
+db.query(sql,(err,result)=>{
+  if(err){res.send(err)}
+  else{res.send(result)}
+})
+}
+
 module.exports = {
   login,
   register,
-  decodeToken
+  decodeToken,
+  getUsers
 };
