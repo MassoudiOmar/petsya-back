@@ -7,56 +7,8 @@ const cloudinary = require("../utils/cloudinary");
 var cloudinar = require("cloudinary");
 var cloudinar = require("cloudinary").v2;
 require("dotenv").config();
-const io = require('socket.io-client');
-const socket = io('http://localhost:3000');
 
-/*
-  `message_id` INT NOT NULL AUTO_INCREMENT,
-  `sender_id` INT NOT NULL,
-  `reciever_id` INT NOT NULL,
-  `message` VARCHAR(200) NOT NULL,
-  `timestamp` VARCHAR(20) NOT NULL,
-  `status` VARCHAR(200) NOT NULL,
-*/
 
-socket.on('new message', (message) => {
-    let addMessage = (req, res) => {
-        const { sender_id, reciever_id, message, convertSation_id } = req.body;
-        if (!sender_id || !reciever_id || !message) {
-          res.send("nothing");
-        } else {
-          const status = "pending";
-          const timestamp = new Date();
-          const sql =
-            "insert into Chat (convertSation_id,sender_id,reciever_id,message,status,timestamp) values (?,?,?,?,?,?)";
-          db.query(
-            sql,
-            [convertSation_id, sender_id, reciever_id, message, status, timestamp],
-            (err, result) => {
-              if (err) {
-                res.send(err);
-              } else {
-                res.send(result);
-              }
-            }
-          );
-        }
-      };  });
-  
-  socket.on('join room', (socketId) => {
-    // Handle join room event
-  });
-  
-  socket.on('leave room', (socketId) => {
-    // Handle leave room event
-  });
-  socket.emit('new message', {
-    sender_id: 1,
-    reciever_id: 2,
-    message: 'Hello, world!',
-    convertSation_id: 123
-  });
-  
 
 function generateId(length) {
   const characters =
@@ -102,7 +54,7 @@ let addMessage = (req, res) => {
     const status = "pending";
     const timestamp = new Date();
     const sql =
-      "insert into Chat (convertSation_id,sender_id,reciever_id,message,status,timestamp) values (?,?,?,?,?,?)";
+      "insert into chat (convertSation_id,sender_id,reciever_id,message,status,timestamp) values (?,?,?,?,?,?)";
     db.query(
       sql,
       [convertSation_id, sender_id, reciever_id, message, status, timestamp],
