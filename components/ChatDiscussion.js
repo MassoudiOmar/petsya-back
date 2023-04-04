@@ -17,7 +17,7 @@ const ChatDiscussion = ({ route }) => {
   const [message, setMessage] = useState("");
   const [Discussion, setDiscussion] = useState("");
   const [userId, setUserId] = useState("");
-
+console.log(userId,'ee')
   useEffect(() => {
     makeConversation();
   }, []);
@@ -81,7 +81,7 @@ const ChatDiscussion = ({ route }) => {
   };
 
   const renderMessage = ({ item, index }) => {
-    if (Discussion.length == 1) {
+    if (Discussion.length == 1 || Discussion.length == 0) {
       return (
         <View style={styles.emptyContainer}>
           <Text style={styles.emptyText}>No messages</Text>
@@ -93,7 +93,7 @@ const ChatDiscussion = ({ route }) => {
         return null;
       }
 
-      const align = item.receiver_id === userId ? "flex-start" : "flex-end";
+      const align = item.sender_id !== userId ? "flex-start" : "flex-end";
       return (
         <View
           key={item.message_id}
