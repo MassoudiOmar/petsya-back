@@ -36,7 +36,7 @@ let addPost = (req, res) => {
         }
       }
     );
-  } else if(attachment && !content){
+  } else if (attachment && !content) {
     cloudinary.uploader.upload(
       `data:image/jpeg;base64,${attachment}`,
       (error, result) => {
@@ -61,7 +61,7 @@ let addPost = (req, res) => {
         }
       }
     );
-  }else{
+  } else {
     cloudinary.uploader.upload(
       `data:image/jpeg;base64,${attachment}`,
       (error, result) => {
@@ -89,15 +89,46 @@ let addPost = (req, res) => {
   }
 };
 
-let getPost =(req,res)=>{
-const sql = 'select * from user_has_posts inner join users where users.id = user_has_posts.user_id'
-db.query(sql,(err,result)=>{
-    if(err){console.log(err)}
-    else{res.send(result.reverse())}
-})
-}
+let getPost = (req, res) => {
+  const sql =
+    "SELECT user_has_posts.*, users.image, users.first_name,users.last_name,users.image FROM user_has_posts INNER JOIN users ON users.id = user_has_posts.user_id;";
+  db.query(sql, (err, result) => {
+    if (err) {
+      console.log(err);
+    } else {
+      res.send(result.reverse());
+    }
+  });
+};
+let getPostByiD = (req, res) => {
+  const { id } = req.params;
+  const sql =
+    "SELECT user_has_posts.*,users.first_name, users.last_name,users.image FROM users INNER JOIN user_has_posts ON users.id = user_has_posts.user_id WHERE user_has_posts.id = ?";
+  db.query(sql, [id], (err, result) => {
+    if (err) {
+      console.log(err);
+    } else {
+      res.send(result.reverse());
+    }
+  });
+};
+
+const getPostByUserId = (req, res) => {
+  const { id } = req.params;
+  const sql =
+    "SELECT * FROM user_has_posts INNER JOIN users ON user_has_posts.user_id = users.id WHERE users.id = ?";
+  db.query(sql, [id], (err, result) => {
+    if (err) {
+      console.log(err);
+    } else {
+      res.send(result.reverse());
+    }
+  });
+};
 
 module.exports = {
   addPost,
-  getPost
+  getPost,
+  getPostByiD,
+  getPostByUserId
 };

@@ -11,7 +11,7 @@ const PORT = process.env.PORT || 3000;
 const login = require("./routes/Users.routes");
 const posts = require("./routes/Post.routes");
 const Chat = require("./routes/Chat.routes");
-
+const Notification =require('./routes/Notification.routes')
 
 
 //use midllewars
@@ -30,6 +30,7 @@ app.use(function(req, res, next) {
 app.use("/api/users",login);
 app.use("/api/post",posts);
 app.use("/api/chat",Chat);
+app.use("/api/notification",Notification);
 
 io.on('connection', (socket) => {
   console.log('a user connected');
