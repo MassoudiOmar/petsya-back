@@ -4,6 +4,7 @@ const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 const cors = require("cors");
 const bodyParser = require("body-parser");
+const PORT = process.env.PORT || 3000;
 
 
 //import routes
@@ -18,10 +19,15 @@ app.use(cors({ origin: "*" }));
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 app.use(express.json());
+<<<<<<< HEAD
 app.use(function(req, res, next) {
   console.log(req.method, req.url);
   next();
 });
+=======
+app.use(cors({ origin: "*" }));
+
+>>>>>>> 12510741b5f18c414ee21da8fdcbfad9babcd6a9
 
 
 //use routes
@@ -47,8 +53,13 @@ app.get('/', (req, res) => {
   res.sendFile(__dirname + '/index.html');
 });
 
+<<<<<<< HEAD
 
 http.listen(3000, () => {
   console.log('listening on *:3000');
+=======
+let server = app.listen(PORT, function () {
+  console.log(`Server running on ${PORT}`);
+>>>>>>> 12510741b5f18c414ee21da8fdcbfad9babcd6a9
 });
 
