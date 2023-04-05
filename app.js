@@ -5,7 +5,7 @@ const io = require('socket.io')(http);
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const PORT = process.env.PORT || 3000;
-
+module.exports = io;
 
 //import routes
 const login = require("./routes/Users.routes");
@@ -32,23 +32,6 @@ app.use("/api/post",posts);
 app.use("/api/chat",Chat);
 app.use("/api/notification",Notification);
 
-io.on('connection', (socket) => {
-  console.log('a user connected');
-
-  socket.on('disconnect', () => {
-    console.log('user disconnected');
-  });
-
-  socket.on('chat message', (msg) => {
-    console.log('message: ' + msg);
-    io.emit('chat message', msg);
-  });
-});
-
-
-app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/index.html');
-});
 
 
 http.listen(PORT, () => {

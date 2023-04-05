@@ -7,6 +7,7 @@ const cloudinary = require("../utils/cloudinary");
 var cloudinar = require("cloudinary");
 var cloudinar = require("cloudinary").v2;
 require("dotenv").config();
+const io = require("../app.js");
 
 
 
@@ -38,7 +39,7 @@ const makeConversation = (req, res) => {
           if (err) {
             res.send(err);
           } else {
-            res.send(result);
+            res.send([{convertSation_id:convertSation_id}]);
           }
         }
       );
@@ -63,6 +64,7 @@ let addMessage = (req, res) => {
           res.send(err);
         } else {
           res.send(result);
+          io.emit(reciever_id,'done');
         }
       }
     );
