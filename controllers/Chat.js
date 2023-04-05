@@ -10,7 +10,6 @@ require("dotenv").config();
 const io = require("../app.js");
 
 
-
 function generateId(length) {
   const characters =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -63,8 +62,15 @@ let addMessage = (req, res) => {
         if (err) {
           res.send(err);
         } else {
+        
           res.send(result);
-          io.emit(reciever_id,'done');
+        
+        
+          let isEventEmitted = false
+          if (!isEventEmitted) {
+            io.emit(reciever_id,'done');
+            isEventEmitted = true;
+          }
         }
       }
     );

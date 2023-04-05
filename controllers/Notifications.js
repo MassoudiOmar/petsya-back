@@ -1,4 +1,5 @@
 var db = require("../database-mysql");
+const io = require("../app.js");
 
 /*
 `id` INT NOT NULL AUTO_INCREMENT,
@@ -18,6 +19,12 @@ let sendLike = (req,res)=>{
         if(err){console.log(err)}
         else{
    res.send(result)
+       
+   let isEventEmitted = false
+   if (!isEventEmitted) {
+     io.emit(post_id,'done');
+     isEventEmitted = true;
+   }
         }
     })
 }

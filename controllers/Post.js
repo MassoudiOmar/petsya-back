@@ -8,26 +8,16 @@ var cloudinar = require("cloudinary");
 var cloudinar = require("cloudinary").v2;
 require("dotenv").config();
 
-/*
-`user_id` INT NOT NULL,
-  `content` INT NOT NULL,
-  `attachment` INT NULL DEFAULT NULL,
-  `likes` INT NULL DEFAULT NULL,
-  `comments` VARCHAR(200) DEFAULT NULL,
-  `shares` INT NULL DEFAULT NULL,
-*/
-
 // add post
 let addPost = (req, res) => {
   const { id } = req.params;
-  const { content, attachment, likes, comments, shares } = req.body;
+  const { content, attachment} = req.body;
   if (!attachment && content) {
     const sql =
-      "INSERT INTO user_has_posts (user_id ,content,attachment,likes,comments,shares) VALUES (?,?,?,?,?,?)";
-
+      "INSERT INTO user_has_posts (user_id ,content,attachment) VALUES (?,?,?)";
     db.query(
       sql,
-      [id, content, attachment, likes, comments, shares],
+      [id, content, attachment],
       (err, result) => {
         if (err) {
           res.send(err);
@@ -45,11 +35,11 @@ let addPost = (req, res) => {
         } else {
           var image = result.secure_url;
           const sql =
-            "INSERT INTO user_has_posts (user_id ,content,attachment,likes,comments,shares) VALUES (?,?,?,?,?,?)";
+            "INSERT INTO user_has_posts (user_id ,content,attachment) VALUES (?,?,?)";
 
           db.query(
             sql,
-            [id, content, image, likes, comments, shares],
+            [id, content, image],
             (err, result) => {
               if (err) {
                 res.send(err);
@@ -70,11 +60,11 @@ let addPost = (req, res) => {
         } else {
           var image = result.secure_url;
           const sql =
-            "INSERT INTO user_has_posts (user_id ,content,attachment,likes,comments,shares) VALUES (?,?,?,?,?,?)";
+            "INSERT INTO user_has_posts (user_id ,content,attachment) VALUES (?,?,?)";
 
           db.query(
             sql,
-            [id, content, image, likes, comments, shares],
+            [id, content, image],
             (err, result) => {
               if (err) {
                 res.send(err);
@@ -126,9 +116,63 @@ const getPostByUserId = (req, res) => {
   });
 };
 
+const sendLike = (req, res) => {
+  const { post_id, sender_id } = req.params;
+  const sql = "insert into likes (post_id,sender_id) values(?,?)";
+  db.query(sql, [post_id, sender_id], (err, result) => {
+    if (err) {
+      console.log(err);
+    } else {
+      res.send("done");
+    }
+  });
+};
+
+const getLikes =(req,res)=>{
+  const {post_id}= req.params
+  const sql ="SELECT users.id, users.first_name, users.last_name, users.image FROM users INNER JOIN likes ON users.id = likes.sender_id WHERE likes.post_id = ?"
+  db.query(sql, [post_id], (err, result) => {
+    if (err) {
+      console.log(err);
+    } else {
+      res.send(result);
+    }
+  });
+}
+
+
+const sendComment = (req, res) => {
+  const { post_id, sender_id } = req.params;
+  const { comment } = req.body;
+  const sql = "insert into comments (post_id,sender_id,comment) values(?,?,?)";
+  db.query(sql, [post_id, sender_id, comment], (err, result) => {
+    if (err) {
+      console.log(err);
+    } else {
+      res.send("done");
+    }
+  });
+};
+
+const getcomments =(req,res)=>{
+  const {post_id}= req.params
+const sql = 'SELECT comments.comment, users.id, users.first_name, users.last_name, users.image FROM comments INNER JOIN users ON users.id = comments.sender_id WHERE comments.post_id = ?'
+  db.query(sql, [post_id], (err, result) => {
+    if (err) {
+      console.log(err);
+    } else {
+      res.send(result);
+    }
+  });
+}
+
 module.exports = {
   addPost,
   getPost,
   getPostByiD,
-  getPostByUserId
+  getPostByUserId,
+  sendLike,
+  sendComment,
+  getLikes,
+  getcomments
 };

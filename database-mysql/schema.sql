@@ -48,9 +48,6 @@ CREATE TABLE IF NOT EXISTS `railway`.`user_has_posts` (
   `user_id` INT NOT NULL,
   `content` VARCHAR(200) DEFAULT NULL,
   `attachment` VARCHAR(200) DEFAULT NULL,
-  `likes` INT NULL DEFAULT NULL,
-  `comments` VARCHAR(200) DEFAULT NULL,
-  `shares` INT NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
 
@@ -82,6 +79,24 @@ CREATE TABLE IF NOT EXISTS `railway`.`users_has_notifications` (
   `action` VARCHAR(10) NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
+
+
+CREATE TABLE IF NOT EXISTS `railway`.`likes` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `sender_id` INT NULL DEFAULT NULL,
+  `post_id` INT NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
+
+CREATE TABLE IF NOT EXISTS `railway`.`comments` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `sender_id` INT NULL DEFAULT NULL,
+  `post_id` INT NULL DEFAULT NULL,
+  `comment` VARCHAR(45) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
+
+
 
 SET SQL_MODE = @OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS = @OLD_FOREIGN_KEY_CHECKS;
