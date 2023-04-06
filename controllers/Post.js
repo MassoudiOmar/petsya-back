@@ -45,11 +45,11 @@ let addPost = (req, res) => {
         } else {
           var image = result.secure_url;
           const sql =
-            "INSERT INTO user_has_posts (user_id ,content,attachment) VALUES (?,?,?)";
+          "INSERT INTO user_has_posts (id,user_id ,content,attachment) VALUES (?,?,?,?)";
 
           db.query(
             sql,
-            [id, content, image],
+            [post_id,id, content, attachment],
             (err, result) => {
               if (err) {
                 res.send(err);
@@ -70,11 +70,11 @@ let addPost = (req, res) => {
         } else {
           var image = result.secure_url;
           const sql =
-            "INSERT INTO user_has_posts (user_id ,content,attachment) VALUES (?,?,?)";
+          "INSERT INTO user_has_posts (id,user_id ,content,attachment) VALUES (?,?,?,?)";
 
           db.query(
             sql,
-            [id, content, image],
+            [post_id,id, content, attachment],
             (err, result) => {
               if (err) {
                 res.send(err);
