@@ -25,6 +25,7 @@ const makeConversation = (req, res) => {
   const sql2 ="SELECT convertSation_id FROM chat WHERE (sender_id = ? AND reciever_id = ?) OR (sender_id = ? AND reciever_id = ?)"
   db.query(sql2, [sender_id, reciever_id,reciever_id,sender_id], (err, result) => {
     if (err) {
+      console.log("e")
       res.send(err);
     } else if (result.length > 0) {
       res.send(result);

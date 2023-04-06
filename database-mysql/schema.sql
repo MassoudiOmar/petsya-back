@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS `railway`.`user_has_posts` (
 -- Table `railway`.`users`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `railway`.`users` (
-  `id` INT NOT NULL AUTO_INCREMENT,
+  `id` VARCHAR(200) NOT NULL,
   `first_name` VARCHAR(200) NOT NULL,
   `last_name` VARCHAR(200) NOT NULL,
   `email` VARCHAR(200) NOT NULL,

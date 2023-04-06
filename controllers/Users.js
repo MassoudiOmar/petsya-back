@@ -81,6 +81,15 @@ let login = (req, res) => {
   }
 };
 
+function generateId(length) {
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return result;
+}
 var register = async (req, res) => {
   try {
     //get info of user
@@ -112,8 +121,8 @@ var register = async (req, res) => {
             const salt = await bcrypt.genSalt();
             const password = await bcrypt.hash(req.body.password, salt);
             db.query(
-              "INSERT INTO users ( first_name, last_name, email, password,status,image) VALUES (?,?,?,?,?,?)",
-              [first_name, last_name, email, password, status, image],
+              "INSERT INTO users ( id,first_name, last_name, email, password,status,image) VALUES (?,?,?,?,?,?,?)",
+              [generateId(),first_name, last_name, email, password, status, image],
               (err, result) => {
                 if (err) {
                   res.send(err);

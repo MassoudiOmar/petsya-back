@@ -161,7 +161,7 @@ const sql = 'SELECT comments.comment, users.id, users.first_name, users.last_nam
     if (err) {
       console.log(err);
     } else {
-      res.send(result);
+      res.send(result.reverse());
     }
   });
 }
