@@ -95,6 +95,7 @@ var register = async (req, res) => {
     //get info of user
     let { first_name, last_name, email, password, image } = req.body;
     const status = "Activated";
+    const id = generateId(10)
     !image
       ? (image =
           "https://static.vecteezy.com/system/resources/previews/008/442/086/original/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg")
@@ -122,7 +123,7 @@ var register = async (req, res) => {
             const password = await bcrypt.hash(req.body.password, salt);
             db.query(
               "INSERT INTO users ( id,first_name, last_name, email, password,status,image) VALUES (?,?,?,?,?,?,?)",
-              [generateId(),first_name, last_name, email, password, status, image],
+              [id,first_name, last_name, email, password, status, image],
               (err, result) => {
                 if (err) {
                   res.send(err);
