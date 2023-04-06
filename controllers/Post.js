@@ -49,7 +49,7 @@ let addPost = (req, res) => {
 
           db.query(
             sql,
-            [post_id,id, content, attachment],
+            [post_id,id, content, image],
             (err, result) => {
               if (err) {
                 res.send(err);
@@ -74,7 +74,7 @@ let addPost = (req, res) => {
 
           db.query(
             sql,
-            [post_id,id, content, attachment],
+            [post_id,id, content, image],
             (err, result) => {
               if (err) {
                 res.send(err);
