@@ -21,7 +21,7 @@ function generateId(length) {
 let addPost = (req, res) => {
   const { id } = req.params;
   const { content, attachment} = req.body;
-  const post_id = generateId10
+  const post_id = generateId(10)
   if (!attachment && content) {
     const sql =
       "INSERT INTO user_has_posts (id,user_id ,content,attachment) VALUES (?,?,?)";
