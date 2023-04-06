@@ -24,7 +24,7 @@ let addPost = (req, res) => {
   const post_id = generateId(10)
   if (!attachment && content) {
     const sql =
-      "INSERT INTO user_has_posts (id,user_id ,content,attachment) VALUES (?,?,?)";
+      "INSERT INTO user_has_posts (id,user_id ,content,attachment) VALUES (?,?,?,?)";
     db.query(
       sql,
       [post_id,id, content, attachment],
