@@ -10,6 +10,15 @@ const io = require("../app.js");
   `seen` VARCHAR(45) NULL DEFAULT NULL,
   `action` VARCHAR(45) NULL DEFAULT NULL,
 */
+function generateId(length) {
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return result;
+}
 let sendLike = (req,res)=>{
     let {sender_id,receiver_id,post_id} = req.params
     const date = new Date()

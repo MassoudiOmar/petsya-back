@@ -9,15 +9,25 @@ var cloudinar = require("cloudinary").v2;
 require("dotenv").config();
 
 // add post
+function generateId(length) {
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return result;
+}
 let addPost = (req, res) => {
   const { id } = req.params;
   const { content, attachment} = req.body;
+  const post_id = generateId10
   if (!attachment && content) {
     const sql =
-      "INSERT INTO user_has_posts (user_id ,content,attachment) VALUES (?,?,?)";
+      "INSERT INTO user_has_posts (id,user_id ,content,attachment) VALUES (?,?,?)";
     db.query(
       sql,
-      [id, content, attachment],
+      [post_id,id, content, attachment],
       (err, result) => {
         if (err) {
           res.send(err);
