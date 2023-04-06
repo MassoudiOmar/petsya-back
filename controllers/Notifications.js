@@ -43,7 +43,7 @@ let getNotification= (req,res)=>{
     const sql = `SELECT users_has_notifications.*, users.image,users.first_name,users.last_name FROM users_has_notifications INNER JOIN users ON users.id = users_has_notifications.sender_id where receiver_id = ?`;
     db.query(sql,[sender_id],(err,result)=>{
         if(err){console.log(err)}
-        else{res.send(result)}
+        else{res.send(result.reverse())}
     })
 }
 

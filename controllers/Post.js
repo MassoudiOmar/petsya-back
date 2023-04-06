@@ -20,22 +20,18 @@ function generateId(length) {
 }
 let addPost = (req, res) => {
   const { id } = req.params;
-  const { content, attachment} = req.body;
-  const post_id = generateId(10)
+  const { content, attachment } = req.body;
+  const post_id = generateId(10);
   if (!attachment && content) {
     const sql =
       "INSERT INTO user_has_posts (id,user_id ,content,attachment) VALUES (?,?,?,?)";
-    db.query(
-      sql,
-      [post_id,id, content, attachment],
-      (err, result) => {
-        if (err) {
-          res.send(err);
-        } else {
-          res.send(result);
-        }
+    db.query(sql, [post_id, id, content, attachment], (err, result) => {
+      if (err) {
+        res.send(err);
+      } else {
+        res.send(result);
       }
-    );
+    });
   } else if (attachment && !content) {
     cloudinary.uploader.upload(
       `data:image/jpeg;base64,${attachment}`,
@@ -45,19 +41,15 @@ let addPost = (req, res) => {
         } else {
           var image = result.secure_url;
           const sql =
-          "INSERT INTO user_has_posts (id,user_id ,content,attachment) VALUES (?,?,?,?)";
+            "INSERT INTO user_has_posts (id,user_id ,content,attachment) VALUES (?,?,?,?)";
 
-          db.query(
-            sql,
-            [post_id,id, content, image],
-            (err, result) => {
-              if (err) {
-                res.send(err);
-              } else {
-                res.send(result);
-              }
+          db.query(sql, [post_id, id, content, image], (err, result) => {
+            if (err) {
+              res.send(err);
+            } else {
+              res.send(result);
             }
-          );
+          });
         }
       }
     );
@@ -70,23 +62,77 @@ let addPost = (req, res) => {
         } else {
           var image = result.secure_url;
           const sql =
-          "INSERT INTO user_has_posts (id,user_id ,content,attachment) VALUES (?,?,?,?)";
+            "INSERT INTO user_has_posts (id,user_id ,content,attachment) VALUES (?,?,?,?)";
 
-          db.query(
-            sql,
-            [post_id,id, content, image],
-            (err, result) => {
-              if (err) {
-                res.send(err);
-              } else {
-                res.send(result);
-              }
+          db.query(sql, [post_id, id, content, image], (err, result) => {
+            if (err) {
+              res.send(err);
+            } else {
+              res.send(result);
             }
-          );
+          });
         }
       }
     );
   }
+};
+
+/*
+[
+  {
+    "id": "f4oSAHM99H",
+    "user_id": "U0TQyn4kck",
+    "content": "Test",
+    "attachment": null,
+    "first_name": "Khayri ",
+    "last_name": "Eddin ",
+    "image": "https://static.vecteezy.com/system/resources/previews/008/442/086/original/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg"
+  }
+]
+*/
+
+let share_post = (req, res) => {
+  const { post_id, sharer_id } = req.params;
+  const id = generateId(10);
+  const sql1 =
+    "SELECT user_has_posts.*,users.first_name, users.last_name,users.image FROM users INNER JOIN user_has_posts ON users.id = user_has_posts.user_id WHERE user_has_posts.id = ?";
+  db.query(sql1, [post_id], (err, result) => {
+    if (err) {
+      console.log(err);
+    } else {
+      const sql2 =
+        "insert into user_shared_post (id,user_id,content,attachment,shared_id) values (?,?,?,?,?)";
+      db.query(
+        sql2,
+        [
+          id,
+          sharer_id,
+          result[0].content,
+          result[0].attachment,
+          result[0].user_id,
+        ],
+        (err, result) => {
+          if (err) {
+            console.log(err);
+          } else {
+            res.send(result);
+          }
+        }
+      );
+    }
+  });
+};
+
+let getSharedPost = (req, res) => {
+  const sql =
+    "SELECT u1.id AS user_owner_id,u1.first_name AS user_first_name ,u1.last_name AS user_last_name ,u1.image AS user_image,u2.id AS user_sharer_id, u2.first_name AS sharer_first_name,u2.last_name AS sharer_last_name,u2.image AS sharer_image,usp.id AS post_id, usp.content, usp.attachment FROM  user_shared_post usp JOIN users u2 ON usp.user_id = u2.id JOIN  users u1 ON usp.shared_id = u1.id;";
+  db.query(sql, (err, result) => {
+    if (err) {
+      console.log(err);
+    } else {
+      res.send(result);
+    }
+  });
 };
 
 let getPost = (req, res) => {
@@ -96,7 +142,7 @@ let getPost = (req, res) => {
     if (err) {
       console.log(err);
     } else {
-      res.send(result.reverse());
+      res.send(result);
     }
   });
 };
@@ -138,9 +184,10 @@ const sendLike = (req, res) => {
   });
 };
 
-const getLikes =(req,res)=>{
-  const {post_id}= req.params
-  const sql ="SELECT users.id, users.first_name, users.last_name, users.image FROM users INNER JOIN likes ON users.id = likes.sender_id WHERE likes.post_id = ?"
+const getLikes = (req, res) => {
+  const { post_id } = req.params;
+  const sql =
+    "SELECT users.id, users.first_name, users.last_name, users.image FROM users INNER JOIN likes ON users.id = likes.sender_id WHERE likes.post_id = ?";
   db.query(sql, [post_id], (err, result) => {
     if (err) {
       console.log(err);
@@ -148,8 +195,7 @@ const getLikes =(req,res)=>{
       res.send(result);
     }
   });
-}
-
+};
 
 const sendComment = (req, res) => {
   const { post_id, sender_id } = req.params;
@@ -164,14 +210,29 @@ const sendComment = (req, res) => {
   });
 };
 
-const getcomments =(req,res)=>{
-  const {post_id}= req.params
-const sql = 'SELECT comments.comment, users.id, users.first_name, users.last_name, users.image FROM comments INNER JOIN users ON users.id = comments.sender_id WHERE comments.post_id = ?'
+const getcomments = (req, res) => {
+  const { post_id } = req.params;
+  const sql =
+    "SELECT comments.comment, users.id, users.first_name, users.last_name, users.image FROM comments INNER JOIN users ON users.id = comments.sender_id WHERE comments.post_id = ?";
   db.query(sql, [post_id], (err, result) => {
     if (err) {
       console.log(err);
     } else {
       res.send(result.reverse());
+    }
+  });
+};
+
+
+const getPOstsansLikes =(req,res)=>{
+  const {post_id} =req.params
+
+const sql = 'SELECT p.* FROM user_has_posts p JOIN likes l ON p.id = l.post_id'
+  db.query(sql, [post_id], (err, result) => {
+    if (err) {
+      console.log(err);
+    } else {
+      res.send(result);
     }
   });
 }
@@ -184,5 +245,8 @@ module.exports = {
   sendLike,
   sendComment,
   getLikes,
-  getcomments
+  getcomments,
+  share_post,
+  getSharedPost,
+  getPOstsansLikes
 };

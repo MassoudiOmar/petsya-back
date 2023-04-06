@@ -92,11 +92,22 @@ CREATE TABLE IF NOT EXISTS `railway`.`comments` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `sender_id` VARCHAR(10) NOT NULL,
   `post_id` VARCHAR(10) NOT NULL,
-  `comment` VARCHAR(45) NULL DEFAULT NULL,
+  `comment` VARCHAR(100) NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
 
+-- -----------------------------------------------------
+-- Table `railway`.`questions_has_contract_types`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `railway`.`user_shared_post` (
+  `id` VARCHAR(10) NOT NULL,
+  `user_id` VARCHAR(200) NOT NULL,
+  `content` VARCHAR(200) DEFAULT NULL,
+  `attachment` VARCHAR(200) DEFAULT NULL,
+  `shared_id` VARCHAR(10) DEFAULT NULL,
 
+  PRIMARY KEY (`id`)
+) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
 
 SET SQL_MODE = @OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS = @OLD_FOREIGN_KEY_CHECKS;
