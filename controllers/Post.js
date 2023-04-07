@@ -18,6 +18,7 @@ function generateId(length) {
   }
   return result;
 }
+
 let addPost = (req, res) => {
   const { id } = req.params;
   const { content, attachment } = req.body;
@@ -95,49 +96,38 @@ let share_post = (req, res) => {
   const { post_id, sharer_id } = req.params;
   const id = generateId(10);
   const sql1 =
-    "SELECT user_has_posts.*,users.first_name, users.last_name,users.image FROM users INNER JOIN user_has_posts ON users.id = user_has_posts.user_id WHERE user_has_posts.id = ?";
+    "SELECT user_has_posts.*,users.first_name, users.last_name,users.image FROM users INNER JOIN user_has_posts ON users.id = user_has_posts.user_id OR users.id = user_has_posts.user_owner_id WHERE user_has_posts.id = ?";
   db.query(sql1, [post_id], (err, result) => {
     if (err) {
-      console.log(err);
+      res.send(err);
     } else {
-      const sql2 =
-        "insert into user_shared_post (id,user_id,content,attachment,shared_id) values (?,?,?,?,?)";
-      db.query(
-        sql2,
-        [
-          id,
-          sharer_id,
-          result[0].content,
-          result[0].attachment,
-          result[0].user_id,
-        ],
-        (err, result) => {
-          if (err) {
-            console.log(err);
-          } else {
-            res.send(result);
-          }
+       const sql2 =
+         "insert into user_has_posts (id,user_id,user_owner_id,content,attachment,sharer_id) values (?,?,?,?,?,?)";
+       db.query(
+         sql2,
+         [
+           id,
+           result[0].user_id,
+           result[0].user_owner_id,
+           result[0].content,
+           result[0].attachment,
+           sharer_id,
+         ],
+         (err, result) => {
+           if (err) {
+             console.log(err);
+           } else {
+             res.send(result);
+           }
+         }
+       );
         }
-      );
-    }
-  });
-};
-
-let getSharedPost = (req, res) => {
-  const sql =
-    "SELECT u1.id AS user_owner_id,u1.first_name AS user_first_name ,u1.last_name AS user_last_name ,u1.image AS user_image,u2.id AS user_sharer_id, u2.first_name AS sharer_first_name,u2.last_name AS sharer_last_name,u2.image AS sharer_image,usp.id AS post_id, usp.content, usp.attachment FROM  user_shared_post usp JOIN users u2 ON usp.user_id = u2.id JOIN  users u1 ON usp.shared_id = u1.id;";
-  db.query(sql, (err, result) => {
-    if (err) {
-      console.log(err);
-    } else {
-      res.send(result);
-    }
   });
 };
 
 let getPost = (req, res) => {
   const sql =
-    "SELECT user_has_posts.*, users.image, users.first_name,users.last_name,users.image FROM user_has_posts INNER JOIN users ON users.id = user_has_posts.user_id;";
+  "SELECT  p.id,  p.content AS post_content,  p.attachment AS post_attachment, u1.id AS owner_id, u1.first_name AS post_owner_first_name,  u1.last_name AS post_owner_last_name,u1.image AS post_owner_image,u2.id AS sharer_id,  u2.first_name AS post_sharer_first_name,  u2.last_name AS post_sharer_last_name ,u2.image AS post_sharer_image , l.sender_id AS user_make_like FROM  user_has_posts p  LEFT JOIN users u1 ON p.user_id = u1.id or p.user_owner_id = u1.id LEFT JOIN users u2 ON p.sharer_id = u2.id LEFT JOIN likes l on l.post_id=p.id"
   db.query(sql, (err, result) => {
     if (err) {
       console.log(err);
@@ -172,22 +162,10 @@ const getPostByUserId = (req, res) => {
   });
 };
 
-const sendLike = (req, res) => {
-  const { post_id, sender_id } = req.params;
-  const sql = "insert into likes (post_id,sender_id) values(?,?)";
-  db.query(sql, [post_id, sender_id], (err, result) => {
-    if (err) {
-      console.log(err);
-    } else {
-      res.send("done");
-    }
-  });
-};
 
 const getLikes = (req, res) => {
   const { post_id } = req.params;
-  const sql =
-    "SELECT users.id, users.first_name, users.last_name, users.image FROM users INNER JOIN likes ON users.id = likes.sender_id WHERE likes.post_id = ?";
+  const sql = "SELECT users.id, users.first_name, users.last_name, users.image FROM users INNER JOIN likes ON users.id = likes.sender_id WHERE likes.post_id = ?";
   db.query(sql, [post_id], (err, result) => {
     if (err) {
       console.log(err);
@@ -242,11 +220,9 @@ module.exports = {
   getPost,
   getPostByiD,
   getPostByUserId,
-  sendLike,
   sendComment,
   getLikes,
   getcomments,
   share_post,
-  getSharedPost,
   getPOstsansLikes
 };

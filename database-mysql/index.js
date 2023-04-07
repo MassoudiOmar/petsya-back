@@ -4,13 +4,15 @@ dotenv.config();
 
 var connection = mysql.createPool({
   connectionLimit: process.env.CONNECTIONLIMIT || 100,
-  host: process.env.MYSQL_HOST || 'containers-us-west-58.railway.app',
+  host: process.env.MYSQL_HOST || '127.0.0.1',
   user: process.env.MYSQL_USER || "root" ,
-  password: process.env.MYSQL_PASSWORD ||'aktO3qJmBIYxwcj7uRIF',
+  password: process.env.MYSQL_PASSWORD ||'root',
   database: process.env.MYSQL_DATABASE || "railway",
   charset: "cp1256",
-  port: process.env.DB_PORT || 6324,
+  port: process.env.DB_PORT || 3306,
 });
+//3306
+//6324
 
 connection.getConnection((err, success) => {
   if (err) {

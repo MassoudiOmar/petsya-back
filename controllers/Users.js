@@ -95,7 +95,7 @@ var register = async (req, res) => {
     //get info of user
     let { first_name, last_name, email, password, image } = req.body;
     const status = "Activated";
-    const id = generateId(10)
+    const id = generateId(10);
     !image
       ? (image =
           "https://static.vecteezy.com/system/resources/previews/008/442/086/original/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg")
@@ -123,7 +123,7 @@ var register = async (req, res) => {
             const password = await bcrypt.hash(req.body.password, salt);
             db.query(
               "INSERT INTO users ( id,first_name, last_name, email, password,status,image) VALUES (?,?,?,?,?,?,?)",
-              [id,first_name, last_name, email, password, status, image],
+              [id, first_name, last_name, email, password, status, image],
               (err, result) => {
                 if (err) {
                   res.send(err);
@@ -154,21 +154,79 @@ const decodeToken = function (req, res) {
       });
     }
     //token is valid
-   res.send(decoded)
+    res.send(decoded);
   });
 };
 
-const getUsers = (req,res)=>{
-const sql= 'select id ,image , first_name,last_name from users'
-db.query(sql,(err,result)=>{
-  if(err){res.send(err)}
-  else{res.send(result)}
-})
-}
+const getUsers = (req, res) => {
+  const sql = "select id ,image , first_name,last_name from users";
+  db.query(sql, (err, result) => {
+    if (err) {
+      res.send(err);
+    } else {
+      res.send(result);
+    }
+  });
+};
+
+const getUserById = (req, res) => {
+  const { id } = req.params;
+  const sql =
+    "select id ,image , first_name,last_name ,email from users where id =?";
+  db.query(sql, (err, result) => {
+    if (err) {
+      res.send(err);
+    } else {
+      res.send(result);
+    }
+  });
+};
+
+const updateInformation = (req, res) => {
+  const { id } = req.params;
+  const { image, first_name, last_name, email } = req.body;
+  if (image.length>250) {
+    cloudinary.uploader.upload(
+      `data:image/jpeg;base64,${image}`,
+      (error, result) => {
+        if (error) {
+          console.error(error);
+        } else {
+          var img = result.secure_url;
+          const sql =
+            "UPDATE users SET first_name = ?,  last_name = ?,  email = ?,  image = ? WHERE  id = ?";
+          db.query(
+            sql,
+            [first_name, last_name, email, img, id],
+            (err, result) => {
+              if (err) {
+                console.log(err);
+              } else {
+                res.send(result);
+              }
+            }
+          );
+        }
+      }
+    );
+  } else {
+    const sql =
+      "UPDATE users SET first_name = ?,  last_name = ?,  email = ?,  image = ? WHERE  id = ?";
+    db.query(sql, [first_name, last_name, email, image, id], (err, result) => {
+      if (err) {
+        console.log(err);
+      } else {
+        res.send(result);
+      }
+    });
+  }
+};
 
 module.exports = {
   login,
   register,
   decodeToken,
-  getUsers
+  getUsers,
+  getUserById,
+  updateInformation,
 };
