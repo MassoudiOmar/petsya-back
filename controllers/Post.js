@@ -7,6 +7,7 @@ const cloudinary = require("../utils/cloudinary");
 var cloudinar = require("cloudinary");
 var cloudinar = require("cloudinary").v2;
 require("dotenv").config();
+const io = require("../app.js");
 
 // add post
 function generateId(length) {
@@ -95,40 +96,64 @@ let addPost = (req, res) => {
 let share_post = (req, res) => {
   const { post_id, sharer_id } = req.params;
   const id = generateId(10);
+  const date = new Date();
+  const seen = "no";
+  const action = "shared";
   const sql1 =
     "SELECT user_has_posts.*,users.first_name, users.last_name,users.image FROM users INNER JOIN user_has_posts ON users.id = user_has_posts.user_id OR users.id = user_has_posts.user_owner_id WHERE user_has_posts.id = ?";
-  db.query(sql1, [post_id], (err, result) => {
+  db.query(sql1, [post_id], (err, results) => {
     if (err) {
       res.send(err);
     } else {
-       const sql2 =
-         "insert into user_has_posts (id,user_id,user_owner_id,content,attachment,sharer_id) values (?,?,?,?,?,?)";
-       db.query(
-         sql2,
-         [
-           id,
-           result[0].user_id,
-           result[0].user_owner_id,
-           result[0].content,
-           result[0].attachment,
-           sharer_id,
-         ],
-         (err, result) => {
-           if (err) {
-             console.log(err);
-           } else {
-             res.send(result);
-           }
-         }
-       );
+      const sql2 =
+        "insert into user_has_posts (id,user_id,user_owner_id,content,attachment,sharer_id) values (?,?,?,?,?,?)";
+      db.query(
+        sql2,
+        [
+          id,
+          results[0].user_id,
+          results[0].user_owner_id,
+          results[0].content,
+          results[0].attachment,
+          sharer_id,
+        ],
+        (err, result) => {
+          if (err) {
+            console.log(err);
+          } else {
+            const sql4 =
+              "insert into users_has_notifications (sender_id,post_id,receiver_id,date,seen,action) value(?,?,?,?,?,?)";
+            db.query(
+              sql4,
+              [
+                sharer_id,
+                post_id,
+                results[0].user_id,
+                date.toLocaleTimeString(),
+                seen,
+                action,
+              ],
+              (err, result) => {
+                if (err) {
+                  console.log(err);
+                } else {
+                  io.emit(post_id, "done");
+                  res.send(result);
+                }
+              }
+            );
+          }
         }
+      );
+    }
   });
 };
 
 let getPost = (req, res) => {
+  const { id } = req.params;
   const sql =
-  "SELECT  p.id,  p.content AS post_content,  p.attachment AS post_attachment, u1.id AS owner_id, u1.first_name AS post_owner_first_name,  u1.last_name AS post_owner_last_name,u1.image AS post_owner_image,u2.id AS sharer_id,  u2.first_name AS post_sharer_first_name,  u2.last_name AS post_sharer_last_name ,u2.image AS post_sharer_image , l.sender_id AS user_make_like FROM  user_has_posts p  LEFT JOIN users u1 ON p.user_id = u1.id or p.user_owner_id = u1.id LEFT JOIN users u2 ON p.sharer_id = u2.id LEFT JOIN likes l on l.post_id=p.id"
-  db.query(sql, (err, result) => {
+    "SELECT  p.id,  p.content AS post_content,  p.attachment AS post_attachment, u1.id AS owner_id, u1.first_name AS post_owner_first_name,  u1.last_name AS post_owner_last_name,u1.image AS post_owner_image,u2.id AS sharer_id,  u2.first_name AS post_sharer_first_name,  u2.last_name AS post_sharer_last_name ,u2.image AS post_sharer_image , l.sender_id AS user_make_like FROM  user_has_posts p  LEFT JOIN users u1 ON p.user_id = u1.id or p.user_owner_id = u1.id LEFT JOIN users u2 ON p.sharer_id = u2.id     LEFT JOIN likes l ON p.id = l.post_id AND l.sender_id = ?";
+  db.query(sql, [id], (err, result) => {
     if (err) {
       console.log(err);
     } else {
@@ -162,10 +187,10 @@ const getPostByUserId = (req, res) => {
   });
 };
 
-
 const getLikes = (req, res) => {
   const { post_id } = req.params;
-  const sql = "SELECT users.id, users.first_name, users.last_name, users.image FROM users INNER JOIN likes ON users.id = likes.sender_id WHERE likes.post_id = ?";
+  const sql =
+    "SELECT users.id, users.first_name, users.last_name, users.image FROM users INNER JOIN likes ON users.id = likes.sender_id WHERE likes.post_id = ?";
   db.query(sql, [post_id], (err, result) => {
     if (err) {
       console.log(err);
@@ -176,14 +201,38 @@ const getLikes = (req, res) => {
 };
 
 const sendComment = (req, res) => {
-  const { post_id, sender_id } = req.params;
+  const { post_id, sender_id, receiver_id } = req.params;
   const { comment } = req.body;
+  const date = new Date();
+  const seen = "no";
+  const action = "commented";
+
   const sql = "insert into comments (post_id,sender_id,comment) values(?,?,?)";
   db.query(sql, [post_id, sender_id, comment], (err, result) => {
     if (err) {
       console.log(err);
     } else {
-      res.send("done");
+      const sql4 =
+        "insert into users_has_notifications (sender_id,post_id,receiver_id,date,seen,action) value(?,?,?,?,?,?)";
+      db.query(
+        sql4,
+        [
+          sender_id,
+          post_id,
+          receiver_id,
+          date.toLocaleTimeString(),
+          seen,
+          action,
+        ],
+        (err, result) => {
+          if (err) {
+            console.log(err);
+          } else {
+            io.emit(post_id, "done");
+            res.send(result);
+          }
+        }
+      );
     }
   });
 };
@@ -201,11 +250,11 @@ const getcomments = (req, res) => {
   });
 };
 
+const getPOstsansLikes = (req, res) => {
+  const { post_id } = req.params;
 
-const getPOstsansLikes =(req,res)=>{
-  const {post_id} =req.params
-
-const sql = 'SELECT p.* FROM user_has_posts p JOIN likes l ON p.id = l.post_id'
+  const sql =
+    "SELECT p.* FROM user_has_posts p JOIN likes l ON p.id = l.post_id";
   db.query(sql, [post_id], (err, result) => {
     if (err) {
       console.log(err);
@@ -213,7 +262,7 @@ const sql = 'SELECT p.* FROM user_has_posts p JOIN likes l ON p.id = l.post_id'
       res.send(result);
     }
   });
-}
+};
 
 module.exports = {
   addPost,
@@ -224,5 +273,5 @@ module.exports = {
   getLikes,
   getcomments,
   share_post,
-  getPOstsansLikes
+  getPOstsansLikes,
 };

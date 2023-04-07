@@ -90,8 +90,34 @@ let getChat = (req, res) => {
   });
 };
 
+let getChatNotification =(req,res)=>{
+  const {userId}=req.params
+  const sql ="select * from chat where reciever_id = ? AND status = 'pending'"
+  db.query(sql, [userId], (err, result) => {
+    if (err) {
+      res.send(err);
+    } else {
+      res.send(result);
+    }
+  });
+}
+
+const updateChat =(req,res)=>{
+  const {receiver_id,convertSation_id}=req.params
+  const sql ="update chat set status = 'seen' where reciever_id =  ? and convertSation_id=?"
+  db.query(sql, [receiver_id,convertSation_id], (err, result) => {
+    if (err) {
+      res.send(err);
+    } else {
+      res.send(result);
+    }
+  });
+}
+
 module.exports = {
   addMessage,
   getChat,
   makeConversation,
+  getChatNotification,
+  updateChat
 };

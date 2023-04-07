@@ -20,7 +20,11 @@ function generateId(length) {
   return result;
 }
 let sendLike = (req, res) => {
-  let { sender_id, post_id } = req.params;
+  let { sender_id, post_id,userId } = req.params;
+  const date = new Date();
+  const seen = "no";
+  const action = "liked";
+
   let sql1 = "select * from likes where sender_id =? and post_id = ?";
   db.query(sql1, [sender_id, post_id], (err, result) => {
     if (err) {
@@ -40,13 +44,27 @@ let sendLike = (req, res) => {
         if (err) {
           console.log(err);
         } else {
-          res.send(result);
-
-          let isEventEmitted = false;
-          if (!isEventEmitted) {
-            io.emit(post_id, "done");
-            isEventEmitted = true;
-          }
+          const sql4 =
+            "insert into users_has_notifications (sender_id,post_id,receiver_id,date,seen,action) value(?,?,?,?,?,?)";
+          db.query(
+            sql4,
+            [
+              sender_id,
+              post_id,
+              userId,
+              date.toLocaleTimeString(),
+              seen,
+              action,
+            ],
+            (err, result) => {
+              if (err) {
+                console.log(err);
+              } else {
+                io.emit(post_id, "done");
+              res.send(result)
+              }
+            }
+          );
         }
       });
     }
@@ -65,4 +83,28 @@ let getNotification = (req, res) => {
   });
 };
 
-module.exports = { sendLike, getNotification };
+let getNotificationNumber = (req, res) => {
+  let { sender_id } = req.params;
+  const sql = `SELECT users_has_notifications.*, users.image,users.first_name,users.last_name FROM users_has_notifications INNER JOIN users ON users.id = users_has_notifications.sender_id where receiver_id = ? AND users_has_notifications.seen = 'no' `;
+  db.query(sql, [sender_id], (err, result) => {
+    if (err) {
+      console.log(err);
+    } else {
+      res.send(JSON.stringify(result.length));
+    }
+  });
+};
+
+const updateNotificationSeen=(req,res)=>{
+  const {id}=req.params
+  const sql ="update users_has_notifications set seen = 'yes' where id = ?"
+  db.query(sql, [id], (err, result) => {
+    if (err) {
+      console.log(err);
+    } else {
+      res.send(JSON.stringify(result.length));
+    }
+  });
+}
+
+module.exports = { sendLike, getNotification,getNotificationNumber ,updateNotificationSeen};
