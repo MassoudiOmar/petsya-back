@@ -145,8 +145,8 @@ let share_post = (req, res) => {
           results[0].user_id,
           results[0].user_owner_id,
           results[0].content,
-          date.toLocaleTimeString().split(" ")[0],
           results[0].attachment,
+          date.toLocaleTimeString().split(" ")[0],
           sharer_id,
         ],
         (err, result) => {
@@ -239,7 +239,8 @@ const sendComment = (req, res) => {
   const seen = "no";
   const action = "commented";
 
-  const sql = "insert into comments (post_id,sender_id,comment,date) values(?,?,?,?)";
+  const sql =
+    "insert into comments (post_id,sender_id,comment,date) values(?,?,?,?)";
   db.query(sql, [post_id, sender_id, comment], (err, result) => {
     if (err) {
       console.log(err);
