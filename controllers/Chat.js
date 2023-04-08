@@ -80,7 +80,7 @@ let addMessage = (req, res) => {
 
 let getChat = (req, res) => {
   const { convertSation_id } = req.params;
-  const sql = `SELECT chat.*, users.image FROM chat INNER JOIN users ON users.id = chat.sender_id where convertSation_id =?`;
+  const sql = `SELECT chat.*, users.image FROM chat INNER JOIN users ON users.id = chat.sender_id  where chat.message IS NOT NULL AND convertSation_id =?`;
   db.query(sql, [convertSation_id], (err, result) => {
     if (err) {
       res.send(err);
