@@ -45,10 +45,11 @@ CREATE TABLE IF NOT EXISTS `railway`.`chat` (
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `railway`.`user_has_posts` (
   `id` VARCHAR(10) NOT NULL,
-  `user_id` VARCHAR(200) DEFAULT NULL,
+  `user_id` VARCHAR(10) DEFAULT NULL,
   `content` VARCHAR(200) DEFAULT NULL,
   `attachment` VARCHAR(200) DEFAULT NULL,
-  `user_owner_id` VARCHAR(200) DEFAULT NULL,
+  `date` VARCHAR(10) DEFAULT NULL,
+  `user_owner_id` VARCHAR(10) DEFAULT NULL,
   `sharer_id` VARCHAR(10) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
@@ -95,6 +96,7 @@ CREATE TABLE IF NOT EXISTS `railway`.`comments` (
   `sender_id` VARCHAR(10) NOT NULL,
   `post_id` VARCHAR(10) NOT NULL,
   `comment` VARCHAR(100) NULL DEFAULT NULL,
+  `date` VARCHAR(10) NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
 

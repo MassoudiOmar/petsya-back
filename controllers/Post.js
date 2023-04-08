@@ -23,17 +23,28 @@ function generateId(length) {
 let addPost = (req, res) => {
   const { id } = req.params;
   const { content, attachment } = req.body;
+  const date = new Date();
   const post_id = generateId(10);
   if (!attachment && content) {
     const sql =
-      "INSERT INTO user_has_posts (id,user_id ,content,attachment) VALUES (?,?,?,?)";
-    db.query(sql, [post_id, id, content, attachment], (err, result) => {
-      if (err) {
-        res.send(err);
-      } else {
-        res.send(result);
+      "INSERT INTO user_has_posts (id,user_id ,content,attachment,date) VALUES (?,?,?,?,?)";
+    db.query(
+      sql,
+      [
+        post_id,
+        id,
+        content,
+        attachment,
+        date.toLocaleTimeString().split(" ")[0],
+      ],
+      (err, result) => {
+        if (err) {
+          res.send(err);
+        } else {
+          res.send(result);
+        }
       }
-    });
+    );
   } else if (attachment && !content) {
     cloudinary.uploader.upload(
       `data:image/jpeg;base64,${attachment}`,
@@ -43,15 +54,25 @@ let addPost = (req, res) => {
         } else {
           var image = result.secure_url;
           const sql =
-            "INSERT INTO user_has_posts (id,user_id ,content,attachment) VALUES (?,?,?,?)";
+            "INSERT INTO user_has_posts (id,user_id ,content,attachment,date) VALUES (?,?,?,?,?)";
 
-          db.query(sql, [post_id, id, content, image], (err, result) => {
-            if (err) {
-              res.send(err);
-            } else {
-              res.send(result);
+          db.query(
+            sql,
+            [
+              post_id,
+              id,
+              content,
+              image,
+              date.toLocaleTimeString().split(" ")[0],
+            ],
+            (err, result) => {
+              if (err) {
+                res.send(err);
+              } else {
+                res.send(result);
+              }
             }
-          });
+          );
         }
       }
     );
@@ -64,15 +85,25 @@ let addPost = (req, res) => {
         } else {
           var image = result.secure_url;
           const sql =
-            "INSERT INTO user_has_posts (id,user_id ,content,attachment) VALUES (?,?,?,?)";
+            "INSERT INTO user_has_posts (id,user_id ,content,attachment,date) VALUES (?,?,?,?,?)";
 
-          db.query(sql, [post_id, id, content, image], (err, result) => {
-            if (err) {
-              res.send(err);
-            } else {
-              res.send(result);
+          db.query(
+            sql,
+            [
+              post_id,
+              id,
+              content,
+              image,
+              date.toLocaleTimeString().split(" ")[0],
+            ],
+            (err, result) => {
+              if (err) {
+                res.send(err);
+              } else {
+                res.send(result);
+              }
             }
-          });
+          );
         }
       }
     );
@@ -106,7 +137,7 @@ let share_post = (req, res) => {
       res.send(err);
     } else {
       const sql2 =
-        "insert into user_has_posts (id,user_id,user_owner_id,content,attachment,sharer_id) values (?,?,?,?,?,?)";
+        "insert into user_has_posts (id,user_id,user_owner_id,content,attachment,date,sharer_id) values (?,?,?,?,?,?,?)";
       db.query(
         sql2,
         [
@@ -114,6 +145,7 @@ let share_post = (req, res) => {
           results[0].user_id,
           results[0].user_owner_id,
           results[0].content,
+          date.toLocaleTimeString().split(" ")[0],
           results[0].attachment,
           sharer_id,
         ],
@@ -129,7 +161,7 @@ let share_post = (req, res) => {
                 sharer_id,
                 post_id,
                 results[0].user_id,
-                date.toLocaleTimeString(),
+                date.toLocaleTimeString().split(" ")[0],
                 seen,
                 action,
               ],
@@ -152,7 +184,7 @@ let share_post = (req, res) => {
 let getPost = (req, res) => {
   const { id } = req.params;
   const sql =
-    "SELECT  p.id,  p.content AS post_content,  p.attachment AS post_attachment, u1.id AS owner_id, u1.first_name AS post_owner_first_name,  u1.last_name AS post_owner_last_name,u1.image AS post_owner_image,u2.id AS sharer_id,  u2.first_name AS post_sharer_first_name,  u2.last_name AS post_sharer_last_name ,u2.image AS post_sharer_image , l.sender_id AS user_make_like FROM  user_has_posts p  LEFT JOIN users u1 ON p.user_id = u1.id or p.user_owner_id = u1.id LEFT JOIN users u2 ON p.sharer_id = u2.id     LEFT JOIN likes l ON p.id = l.post_id AND l.sender_id = ?";
+    "SELECT  p.id,p.date,  p.content AS post_content,  p.attachment AS post_attachment, u1.id AS owner_id, u1.first_name AS post_owner_first_name,  u1.last_name AS post_owner_last_name,u1.image AS post_owner_image,u2.id AS sharer_id,  u2.first_name AS post_sharer_first_name,  u2.last_name AS post_sharer_last_name ,u2.image AS post_sharer_image , l.sender_id AS user_make_like FROM  user_has_posts p  LEFT JOIN users u1 ON p.user_id = u1.id or p.user_owner_id = u1.id LEFT JOIN users u2 ON p.sharer_id = u2.id     LEFT JOIN likes l ON p.id = l.post_id AND l.sender_id = ?";
   db.query(sql, [id], (err, result) => {
     if (err) {
       console.log(err);
@@ -207,7 +239,7 @@ const sendComment = (req, res) => {
   const seen = "no";
   const action = "commented";
 
-  const sql = "insert into comments (post_id,sender_id,comment) values(?,?,?)";
+  const sql = "insert into comments (post_id,sender_id,comment,date) values(?,?,?,?)";
   db.query(sql, [post_id, sender_id, comment], (err, result) => {
     if (err) {
       console.log(err);
@@ -220,7 +252,7 @@ const sendComment = (req, res) => {
           sender_id,
           post_id,
           receiver_id,
-          date.toLocaleTimeString(),
+          date.toLocaleTimeString().split(" ")[0],
           seen,
           action,
         ],
@@ -240,7 +272,7 @@ const sendComment = (req, res) => {
 const getcomments = (req, res) => {
   const { post_id } = req.params;
   const sql =
-    "SELECT comments.comment, users.id, users.first_name, users.last_name, users.image FROM comments INNER JOIN users ON users.id = comments.sender_id WHERE comments.post_id = ?";
+    "SELECT comments.comment,comments.date, users.id, users.first_name, users.last_name, users.image FROM comments INNER JOIN users ON users.id = comments.sender_id WHERE comments.post_id = ?";
   db.query(sql, [post_id], (err, result) => {
     if (err) {
       console.log(err);
