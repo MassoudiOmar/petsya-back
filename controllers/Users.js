@@ -98,7 +98,7 @@ var register = async (req, res) => {
     const id = generateId(10);
     !image
       ? (image =
-          "https://www.photoshopbuzz.com/wp-content/uploads/change-color-part-of-image-psd4.jpg")
+          "https://e0.pxfuel.com/wallpapers/238/852/desktop-wallpaper-masque-luffy-smiling-one-piece-par-lilzer99-in-2020-anime-anime-one-piece-manga-luffy-smile.jpg")
       : null;
     // check fields
     if (!first_name || !last_name || !email || !password) {

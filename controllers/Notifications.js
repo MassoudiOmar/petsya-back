@@ -86,8 +86,16 @@ let getNotification = (req, res) => {
 
 let getNotificationNumber = (req, res) => {
   let { sender_id } = req.params;
-  const sql = `SELECT users_has_notifications.*, users.image,users.first_name,users.last_name FROM users_has_notifications INNER JOIN users ON users.id = users_has_notifications.sender_id where receiver_id = ? AND users_has_notifications.seen = 'no' `;
-  db.query(sql, [sender_id], (err, result) => {
+  const sql = `
+  SELECT users_has_notifications.*, users.image, users.first_name, users.last_name 
+FROM users_has_notifications 
+INNER JOIN users ON users.id = users_has_notifications.sender_id 
+WHERE receiver_id = ? 
+AND sender_id != ? 
+AND users_has_notifications.seen = 'no'
+
+  `;
+  db.query(sql, [sender_id,sender_id], (err, result) => {
     if (err) {
       console.log(err);
     } else {
