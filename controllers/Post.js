@@ -137,7 +137,7 @@ let share_post = (req, res) => {
       res.send(err);
     } else {
       const sql2 =
-        "insert into user_has_posts (id,user_id,user_owner_id,content,attachment,date,sharer_id) values (?,?,?,?,?,?,?)";
+        "insert into user_has_posts (id,user_id,user_owner_id,content,attachment,sharer_id,date) values (?,?,?,?,?,?,?)";
       db.query(
         sql2,
         [
@@ -146,24 +146,24 @@ let share_post = (req, res) => {
           results[0].user_owner_id,
           results[0].content,
           results[0].attachment,
-          date.toLocaleTimeString().split(" ")[0],
           sharer_id,
+          date.toLocaleTimeString().split(" ")[0]
         ],
         (err, result) => {
           if (err) {
             console.log(err);
           } else {
             const sql4 =
-              "insert into users_has_notifications (sender_id,post_id,receiver_id,date,seen,action) value(?,?,?,?,?,?)";
+              "insert into users_has_notifications (sender_id,post_id,receiver_id,seen,action,date) value(?,?,?,?,?,?)";
             db.query(
               sql4,
               [
                 sharer_id,
                 post_id,
                 results[0].user_id,
-                date.toLocaleTimeString().split(" ")[0],
                 seen,
                 action,
+                date.toLocaleTimeString().split(" ")[0],
               ],
               (err, result) => {
                 if (err) {
