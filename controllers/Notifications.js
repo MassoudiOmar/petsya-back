@@ -1,5 +1,6 @@
 var db = require("../database-mysql");
 const io = require("../app.js");
+const time = new Date();
 
 /*
 `id` INT NOT NULL AUTO_INCREMENT,
@@ -21,7 +22,7 @@ function generateId(length) {
 }
 let sendLike = (req, res) => {
   let { sender_id, post_id,userId } = req.params;
-  const date = new Date();
+  const date = time.getHours() + ":" + time.getMinutes()
   const seen = "no";
   const action = "liked";
 
@@ -52,7 +53,7 @@ let sendLike = (req, res) => {
               sender_id,
               post_id,
               userId,
-              date.toLocaleTimeString(),
+              date,
               seen,
               action,
             ],

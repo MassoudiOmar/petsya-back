@@ -8,6 +8,7 @@ var cloudinar = require("cloudinary");
 var cloudinar = require("cloudinary").v2;
 require("dotenv").config();
 const io = require("../app.js");
+const time = new Date();
 
 // add post
 function generateId(length) {
@@ -23,7 +24,7 @@ function generateId(length) {
 let addPost = (req, res) => {
   const { id } = req.params;
   const { content, attachment } = req.body;
-  const date = new Date();
+  const date = time.getHours() + ":" + time.getMinutes()
   const post_id = generateId(10);
   if (!attachment && content) {
     const sql =
@@ -35,7 +36,7 @@ let addPost = (req, res) => {
         id,
         content,
         attachment,
-        date.toLocaleTimeString().split(" ")[0],
+        date,
       ],
       (err, result) => {
         if (err) {
@@ -63,7 +64,7 @@ let addPost = (req, res) => {
               id,
               content,
               image,
-              date.toLocaleTimeString().split(" ")[0],
+              date,
             ],
             (err, result) => {
               if (err) {
@@ -94,7 +95,7 @@ let addPost = (req, res) => {
               id,
               content,
               image,
-              date.toLocaleTimeString().split(" ")[0],
+              date,
             ],
             (err, result) => {
               if (err) {
@@ -127,7 +128,7 @@ let addPost = (req, res) => {
 let share_post = (req, res) => {
   const { post_id, sharer_id } = req.params;
   const id = generateId(10);
-  const date = new Date();
+  const date = time.getHours() + ":" + time.getMinutes()
   const seen = "no";
   const action = "shared";
   const sql1 =
@@ -147,7 +148,7 @@ let share_post = (req, res) => {
           results[0].content,
           results[0].attachment,
           sharer_id,
-          date.toLocaleTimeString().split(" ")[0]
+          date,
         ],
         (err, result) => {
           if (err) {
@@ -163,7 +164,7 @@ let share_post = (req, res) => {
                 results[0].user_id,
                 seen,
                 action,
-                date.toLocaleTimeString().split(" ")[0],
+                date,
               ],
               (err, result) => {
                 if (err) {
@@ -235,39 +236,43 @@ const getLikes = (req, res) => {
 const sendComment = (req, res) => {
   const { post_id, sender_id, receiver_id } = req.params;
   const { comment } = req.body;
-  const date = new Date();
+  const date = time.getHours() + ":" + time.getMinutes()
   const seen = "no";
   const action = "commented";
 
   const sql =
     "insert into comments (post_id,sender_id,comment,date) values(?,?,?,?)";
-  db.query(sql, [post_id, sender_id, comment,date.toLocaleTimeString().split(' ')[0]], (err, result) => {
-    if (err) {
-      console.log(err);
-    } else {
-      const sql4 =
-        "insert into users_has_notifications (sender_id,post_id,receiver_id,date,seen,action) value(?,?,?,?,?,?)";
-      db.query(
-        sql4,
-        [
-          sender_id,
-          post_id,
-          receiver_id,
-          date.toLocaleTimeString().split(" ")[0],
-          seen,
-          action,
-        ],
-        (err, result) => {
-          if (err) {
-            console.log(err);
-          } else {
-            io.emit(post_id, "done");
-            res.send(result);
+  db.query(
+    sql,
+    [post_id, sender_id, comment, date],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      } else {
+        const sql4 =
+          "insert into users_has_notifications (sender_id,post_id,receiver_id,date,seen,action) value(?,?,?,?,?,?)";
+        db.query(
+          sql4,
+          [
+            sender_id,
+            post_id,
+            receiver_id,
+            date,
+            seen,
+            action,
+          ],
+          (err, result) => {
+            if (err) {
+              console.log(err);
+            } else {
+              io.emit(post_id, "done");
+              res.send(result);
+            }
           }
-        }
-      );
+        );
+      }
     }
-  });
+  );
 };
 
 const getcomments = (req, res) => {
