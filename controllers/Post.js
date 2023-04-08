@@ -241,7 +241,7 @@ const sendComment = (req, res) => {
 
   const sql =
     "insert into comments (post_id,sender_id,comment,date) values(?,?,?,?)";
-  db.query(sql, [post_id, sender_id, comment], (err, result) => {
+  db.query(sql, [post_id, sender_id, comment,date.toLocaleTimeString().split(' ')[0]], (err, result) => {
     if (err) {
       console.log(err);
     } else {
