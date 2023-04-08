@@ -98,7 +98,7 @@ var register = async (req, res) => {
     const id = generateId(10);
     !image
       ? (image =
-          "https://static.vecteezy.com/system/resources/previews/008/442/086/original/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg")
+          "https://www.photoshopbuzz.com/wp-content/uploads/change-color-part-of-image-psd4.jpg")
       : null;
     // check fields
     if (!first_name || !last_name || !email || !password) {
@@ -185,7 +185,7 @@ const getUserById = (req, res) => {
 const updateInformation = (req, res) => {
   const { id } = req.params;
   const { image, first_name, last_name, email } = req.body;
-  if (image.length>250) {
+  if (image.length > 250) {
     cloudinary.uploader.upload(
       `data:image/jpeg;base64,${image}`,
       (error, result) => {
