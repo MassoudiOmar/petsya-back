@@ -108,8 +108,6 @@ var register = async (req, res) => {
     else if (!validateEmail(email)) {
       res.send({ msg: "Please enter a valid email address." });
       // Validation Password
-    } else if (typeof password !== "number" && password.length !== 5) {
-      res.send({ msg: "Please enter a valid password" });
     } else {
       //check user
       const sql = `SELECT * FROM users WHERE email=? `;
