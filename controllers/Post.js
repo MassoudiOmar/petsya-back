@@ -210,7 +210,7 @@ let getPostByiD = (req, res) => {
 const getPostByUserId = (req, res) => {
   const { id } = req.params;
   const sql =
-    "SELECT * FROM user_has_posts INNER JOIN users ON user_has_posts.user_id = users.id WHERE users.id = ?";
+    "SELECT * FROM user_has_posts INNER JOIN users ON  users.id= user_has_posts.user_id  WHERE users.id = ?";
   db.query(sql, [id], (err, result) => {
     if (err) {
       console.log(err);
@@ -303,10 +303,10 @@ const getPOstsansLikes = (req, res) => {
 };
 
 const deletePostById = (req, res) => {
-  const { content } = req.params;
+  const { id } = req.params;
   const sql =
-    "delete FROM user_has_posts WHERE content = ?";
-  db.query(sql, [content], (err, result) => {
+    "delete FROM user_has_posts WHERE id = ?";
+  db.query(sql, [id], (err, result) => {
     if (err) {
       console.log(err);
     } else {
