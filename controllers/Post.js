@@ -209,8 +209,7 @@ let getPostByiD = (req, res) => {
 
 const getPostByUserId = (req, res) => {
   const { id } = req.params;
-  const sql =
-    "SELECT * FROM railway.user_has_posts INNER JOIN railway.users ON railway.user_has_posts.user_id = railway.users.id WHERE railway.user_has_posts.user_id = ?";
+  const sql ="SELECT railway.user_has_posts.*, railway.users.first_name, railway.users.last_name, railway.users.image FROM railway.user_has_posts INNER JOIN railway.users ON railway.user_has_posts.user_id = railway.users.id WHERE railway.user_has_posts.user_id = ?;"
   db.query(sql, [id], (err, result) => {
     if (err) {
       console.log(err);
