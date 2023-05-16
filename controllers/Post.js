@@ -303,10 +303,10 @@ const getPOstsansLikes = (req, res) => {
 };
 
 const deletePostById = (req, res) => {
-  const { id } = req.params;
+  const { content } = req.params;
   const sql =
     "delete FROM user_has_posts WHERE id = ?";
-  db.query(sql, [id], (err, result) => {
+  db.query(sql, [content], (err, result) => {
     if (err) {
       console.log(err);
     } else {
