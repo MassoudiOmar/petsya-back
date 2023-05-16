@@ -35,6 +35,6 @@ app.use("/api/notification",Notification);
 
 
 http.listen(PORT, () => {
-  console.log('listening on *:3000');
+  console.log('listening on port : '+PORT);
 });
 

@@ -10,5 +10,6 @@ router.get('/getlikes/:post_id',posts.getLikes)
 router.get('/getcomments/:post_id',posts.getcomments)
 router.post('/sharePost/:post_id/:sharer_id',posts.share_post)
 router.get('/getPOstsansLikes/:post_id',posts.getPOstsansLikes)
+router.delete('/deletePostById/:id',posts.deletePostById)
 
 module.exports = router;

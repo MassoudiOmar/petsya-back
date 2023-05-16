@@ -302,6 +302,19 @@ const getPOstsansLikes = (req, res) => {
   });
 };
 
+const deletePostById = (req, res) => {
+  const { id } = req.params;
+  const sql =
+    "delete FROM user_has_posts WHERE id = ?";
+  db.query(sql, [id], (err, result) => {
+    if (err) {
+      console.log(err);
+    } else {
+      res.send(result);
+    }
+  });
+};
+
 module.exports = {
   addPost,
   getPost,
@@ -312,4 +325,5 @@ module.exports = {
   getcomments,
   share_post,
   getPOstsansLikes,
+  deletePostById
 };
